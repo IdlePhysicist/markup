@@ -20,3 +20,9 @@ clean:
 	rm -f $(BUILD)/*
 	touch $(BUILD)/.keep
 
+install:
+	if [[ ! -d $(HOME)/.config/markup ]]; then \
+		mkdir -p $(HOME)/.config/markup; \
+	fi
+	mv $(BUILD)/markup $(GOPATH)/bin/.	
+
