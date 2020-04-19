@@ -1,7 +1,6 @@
 package main
 
 import (
-	//"errors"
 	"fmt"
 	"log"
 	"os"
@@ -25,7 +24,6 @@ var (
 
 type file struct {
 	name string
-	dir  string
 	ext  string
 }
 
@@ -35,6 +33,12 @@ func init() {
 	flag.StringVarP(&templateName, "template", "t", "", "Template name")
 
 	flag.Parse()
+
+	if versionFlg {
+		fmt.Printf("Version: %s (%s)\n", version, commit)
+		os.Exit(0)
+	}
+
 	if flag.NArg() == 0 {
 		flag.Usage()
 		os.Exit(1)
@@ -48,11 +52,6 @@ func init() {
 
 
 func main() {
-	if versionFlg {
-		fmt.Printf("Version: %s (%s)\n", version, commit)
-		os.Exit(0)
-	}
-
 	mdFile, err := findFile(inputName)
 	if err != nil {
 		log.Fatal(err)
@@ -64,6 +63,16 @@ func main() {
 	}
 
 	err = markup(mdFile, template)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if xeroxFlg {
+		err = xerox(mdFile)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
 }
 
 
@@ -75,19 +84,20 @@ func markup(input *file, template *file) error {
 
 	out, err := exec.Command(
 		`pandoc`,
-		fmt.Sprintf("%s/%s.%s", input.dir, input.name, input.ext),
-		fmt.Sprintf("--template=%s/%s.tex", template.dir, template.name),
-		fmt.Sprintf("-o %s/%s.pdf", input.dir, input.name),
+		fmt.Sprintf("%s%s", input.name, input.ext),
+		`-s`,
+		fmt.Sprintf("--template=%s%s", template.name, template.ext),
+		fmt.Sprintf("--output=%s.pdf", input.name),
 		"--pdf-engine=xelatex",
 		"--listings",
 	).CombinedOutput()
-	if err != nil {
-		return err
-	}
-	fmt.Println(out)
 
-	return nil
+	if len(out) > 1 {
+		fmt.Println(string(out))
+	}
+	return err
 }
+
 
 func xerox(input *file) error {
 	err := checkBinary(`convert`)
@@ -97,21 +107,19 @@ func xerox(input *file) error {
 
 	out, err := exec.Command(
 		`convert`,
-		`-density 150`,
-		fmt.Sprintf("%s/%s.pdf", input.dir, input.name),
-		`-rotate 0.5`,
-		`-attenuate 0.7`,
-		`+noise Multiplicative`,
-		`-colorspace Gray`,
-		fmt.Sprintf("%s/%s.pdf", input.dir, input.name),
+		`-density`,`150`,
+		fmt.Sprintf("%s.pdf", input.name),
+		`-rotate`, `0.5`,
+		`-attenuate`, `0.7`,
+		`+noise`, `Multiplicative`,
+		`-colorspace`, `Gray`,
+		fmt.Sprintf("%s.pdf", input.name),
 	).CombinedOutput()
-	if err != nil {
-		return err
+
+	if len(out) > 1 {
+		fmt.Println(string(out))
 	}
-	fmt.Println(out)
-
-	return nil
-
+	return err
 }
 
 
@@ -122,26 +130,6 @@ func checkBinary(name string) error {
 
 
 func findTemplate(name string) (*file, error) {
-	/*var templates []string
-
-	err := filepath.Walk(
-		TEMPLATEDIR,
-    func(path string, info os.FileInfo, err error) error {
-      if err != nil {
-          return err
-      }
-
-      if filepath.Ext(path) == `.tex` {
-        templates = append(templates, path)
-      }
-      return nil
-  })
-	if err != nil {
-		return nil, err
-	} else if len(templates) == 0 {
-		return nil, errors.New("no templates found")
-	}*/
-
 	return findFile(fmt.Sprintf("%s/%s.tex", TEMPLATEDIR, name))
 }
 
@@ -151,16 +139,10 @@ func findFile(input string) (*file, error) {
 		return nil, fmt.Errorf("file does not exist: %s", input)
 	}
 
-	path, err := filepath.Dir(input)
-	if err != nil {
-		return nil, err
-	}
-
 	ext := filepath.Ext(input)
 
 	return &file{
 		name: strings.TrimSuffix(input, ext),
-		dir: path,
 		ext: ext,
 	}, nil
 }
