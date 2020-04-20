@@ -3,7 +3,8 @@ CGO=0
 SRC=.
 BUILD=bin
 version?="0.0.0"
-ldflags="-X main.commit=`git rev-list -1 HEAD | head -c 8` -X main.version=$(version)"
+repo=github.com/IdlePhysicist/markup/cmd
+ldflags="-X $(repo).Commit=`git rev-list -1 HEAD | head -c 8` -X $(repo).Version=$(version)"
 
 default: darwin
 
