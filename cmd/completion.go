@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -19,6 +20,7 @@ var completionCmd = &cobra.Command{
 			rootCmd.GenBashCompletion(os.Stdout)
 		case `zsh`:
 			rootCmd.GenZshCompletion(os.Stdout)
+			io.WriteString(os.Stdout, "\ncompdef _markup markup\n")
 		default:
 			fmt.Printf("Unknown shell: %s", args[0])
 		}

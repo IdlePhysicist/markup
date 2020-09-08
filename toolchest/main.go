@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	TEMPLATEDIR = fmt.Sprintf("%s/.config/markup", os.Getenv("HOME"))
+	templateDir = fmt.Sprintf("%s/.config/markup", os.Getenv("HOME"))
 )
 
 type file struct {
@@ -70,8 +70,8 @@ func checkBinary(name string) error {
 }
 
 func FindAllTemplates() error {
-	fmt.Printf("Template Directory: %s\n", TEMPLATEDIR)
-	return filepath.Walk(TEMPLATEDIR,
+	fmt.Printf("Template Directory: %s\n", templateDir)
+	return filepath.Walk(templateDir,
 		func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 					return err
@@ -86,7 +86,7 @@ func FindAllTemplates() error {
 
 
 func FindTemplate(name string) (*file, error) {
-	return FindFile(fmt.Sprintf("%s/%s.tex", TEMPLATEDIR, name))
+	return FindFile(fmt.Sprintf("%s/%s.tex", templateDir, name))
 }
 
 
