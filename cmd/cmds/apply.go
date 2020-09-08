@@ -1,11 +1,11 @@
-package cmd
+package cmds
 
 import (
 	"log"
 
 	"github.com/spf13/cobra"
 
-	"github.com/IdlePhysicist/markup/toolchest"
+	"github.com/IdlePhysicist/markup"
 )
 
 var (
@@ -16,23 +16,23 @@ var (
 		Args: cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 
-			mdFile, err := toolchest.FindFile(args[0])
+			mdFile, err := markup.OpenFile(args[0])
 			if err != nil {
 				log.Fatal(err)
 			}
 
-			template, err := toolchest.FindTemplate(templateName)
+			template, err := markup.FindTemplate(templateName)
 			if err != nil {
 				log.Fatal(err)
 			}
 
-			err = toolchest.Markup(mdFile, template)
+			err = markup.Markup(mdFile, template)
 			if err != nil {
 				log.Fatal(err)
 			}
 
 			if xeroxFlg {
-				err = toolchest.Xerox(mdFile)
+				err = markup.Xerox(mdFile)
 				if err != nil {
 					log.Fatal(err)
 				}

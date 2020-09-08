@@ -1,10 +1,10 @@
-package cmd
+package cmds
 
 import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/IdlePhysicist/markup/toolchest"
+	"github.com/IdlePhysicist/markup"
 )
 
 var listCmd = &cobra.Command{
@@ -12,7 +12,7 @@ var listCmd = &cobra.Command{
 	Short: "A list the known templates",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		_ = toolchest.FindAllTemplates()
+		_ = markup.FindAllTemplates()
 	},
 }
 
