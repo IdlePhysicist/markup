@@ -1,18 +1,15 @@
 # Environment Variables
 CGO=0
-SRC=.
+SRC=cmd/.
 BUILD=bin
 version?="0.0.0"
-repo=github.com/IdlePhysicist/markup/cmd
+repo=github.com/IdlePhysicist/markup/cmd/cmds
 ldflags="-X $(repo).Commit=`git rev-list -1 HEAD | head -c 8` -X $(repo).Version=$(version)"
 
-default: darwin
+default: build
 
-linux: clean
-	env CGO_ENABLED=$(CGO) GOOS=$@ go build -ldflags $(ldflags) -o $(BUILD)/ ./$(SRC)
-
-darwin: clean
-	env CGO_ENABLED=$(CGO) GOOS=$@ go build -ldflags $(ldflags) -o $(BUILD)/ ./$(SRC)
+build: clean
+	env CGO_ENABLED=$(CGO) go build -ldflags $(ldflags) -o $(BUILD)/markup ./$(SRC)
 
 clean:
 	if [[ ! -d $(BUILD) ]]; then \

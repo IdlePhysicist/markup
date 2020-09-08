@@ -1,11 +1,11 @@
-package cmd
+package cmds
 
 import (
 	"log"
 
 	"github.com/spf13/cobra"
 
-	"github.com/IdlePhysicist/markup/toolchest"
+	"github.com/IdlePhysicist/markup"
 )
 
 var xeroxCmd = &cobra.Command{
@@ -14,12 +14,12 @@ var xeroxCmd = &cobra.Command{
 
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		pdfFile, err := toolchest.FindFile(args[0])
+		pdfFile, err := markup.FindFile(args[0])
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		err = toolchest.Xerox(pdfFile)
+		err = markup.Xerox(pdfFile)
 		if err != nil {
 			log.Fatal(err)
 		}
