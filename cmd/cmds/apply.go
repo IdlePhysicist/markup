@@ -16,7 +16,7 @@ var (
 		Args: cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 
-			mdFile, err := markup.FindFile(args[0])
+			mdFile, err := markup.OpenFile(args[0])
 			if err != nil {
 				log.Fatal(err)
 			}

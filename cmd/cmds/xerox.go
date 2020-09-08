@@ -14,7 +14,7 @@ var xeroxCmd = &cobra.Command{
 
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		pdfFile, err := markup.FindFile(args[0])
+		pdfFile, err := markup.OpenFile(args[0])
 		if err != nil {
 			log.Fatal(err)
 		}

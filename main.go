@@ -17,6 +17,9 @@ type file struct {
 	ext  string
 }
 
+// Markup is a wrapper function around Pandoc that renders the inputted Markdown file to a PDF
+// using Pandoc and a LaTeX template provided by the user. The function accepts the input Markdown
+// file and a LaTeX template file.
 func Markup(input *file, template *file) error {
 	err := checkBinary(`pandoc`)
 	if err != nil {
@@ -39,7 +42,8 @@ func Markup(input *file, template *file) error {
 	return err
 }
 
-
+// Xerox is a wrapper function around ImageMagick's convert that "xeroxes" the PDF to look as
+// though it has been photocopied n times.
 func Xerox(input *file) error {
 	err := checkBinary(`convert`)
 	if err != nil {
@@ -69,6 +73,7 @@ func checkBinary(name string) error {
 	return err
 }
 
+// FindAllTemplates walks the template directory to find all LaTeX template files present.
 func FindAllTemplates() error {
 	fmt.Printf("Template Directory: %s\n", templateDir)
 	return filepath.Walk(templateDir,
@@ -84,13 +89,13 @@ func FindAllTemplates() error {
 	})
 }
 
-
+// FindTempate accepts a name of a template and returns a pointer to that file.
 func FindTemplate(name string) (*file, error) {
-	return FindFile(fmt.Sprintf("%s/%s.tex", templateDir, name))
+	return OpenFile(fmt.Sprintf("%s/%s.tex", templateDir, name))
 }
 
-
-func FindFile(input string) (*file, error) {
+// OpenFile accepts a path to a file and returns a pointer to the file, if it exists.
+func OpenFile(input string) (*file, error) {
 	if ! checkFile(input) {
 		return nil, fmt.Errorf("file does not exist: %s", input)
 	}
